@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${teacher.firstName + ' ' + teacher.lastName + ' | Teacher Profile'}"></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --profile-card-bg: #2c3034;
+            --accent-color: #4e73df;
+            --text-light: #f8f9fa;
+            --text-muted: #adb5bd;
+        }
+
+        body {
+            background-color: #1a1d20;
+            color: var(--text-light);
+        }
+
+        .profile-card {
+            background: var(--profile-card-bg);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .profile-header {
+            background: rgba(0,0,0,0.2);
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .profile-section {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .profile-section:last-child {
+            border-bottom: none;
+        }
+
+        .profile-section h5 {
+            color: var(--accent-color);
+            margin-bottom: 1.2rem;
+            font-weight: 600;
+        }
+
+        .profile-info p {
+            margin-bottom: 0.8rem;
+        }
+
+        .info-label {
+            color: var(--text-muted);
+            min-width: 120px;
+            display: inline-block;
+        }
+
+        .age-badge {
+            background: var(--accent-color);
+            padding: 0.35rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .contact-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .contact-link:hover {
+            color: #3a56c0;
+            text-decoration: underline;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent-color);
+        }
+
+        .subject-badge {
+            background: rgba(78, 115, 223, 0.2);
+            color: var(--accent-color);
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<div th:replace="~{fragment/navbar.html}"></div>
+
+<!-- Profile Section -->
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="profile-card shadow-lg mb-4">
+                <!-- Profile Header -->
+                <div class="profile-header d-flex flex-column flex-md-row justify-content-between align-items-center">
+                    <div class="d-flex align-items-center mb-3 mb-md-0">
+                        <div class="me-3">
+                            <img th:src="@{'https://ui-avatars.com/api/?name=' + ${teacher.firstName} + '+' + ${teacher.lastName} + '&background=4e73df&color=fff&size=100'}"
+                                 alt="Profile" class="profile-avatar">
+                        </div>
+                        <div>
+                            <h2 class="mb-1" th:text="${teacher.firstName + ' ' + teacher.lastName}"></h2>
+                            <p class="text-muted mb-0">
+                                <i class="fas fa-id-card me-1"></i>
+                                Teacher ID: <span th:text="${teacher.id}"></span>
+                            </p>
+                        </div>
+                    </div>
+                    <span class="age-badge">
+                        <i class="fas fa-birthday-cake me-1"></i>
+                        <span th:text="${teacher.age} + ' years old'"></span>
+                    </span>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="profile-section">
+                    <h5><i class="fas fa-address-card me-2"></i>Contact Information</h5>
+                    <div class="profile-info">
+                        <p>
+                            <span class="info-label"><i class="fas fa-envelope me-1"></i> Email:</span>
+                            <a th:href="'mailto:' + ${teacher.email}"
+                               class="contact-link"
+                               th:text="${teacher.email}"></a>
+                        </p>
+                        <p>
+                            <span class="info-label"><i class="fas fa-phone me-1"></i> Phone:</span>
+                            <a th:href="'tel:' + ${teacher.telephoneNumber}"
+                               class="contact-link"
+                               th:text="${teacher.telephoneNumber}"></a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Teaching Subjects -->
+                <div class="profile-section" th:if="${not #lists.isEmpty(teacher.subjects)}">
+                    <h5><i class="fas fa-book-open me-2"></i>Teaching Subjects</h5>
+                    <div class="d-flex flex-wrap">
+                        <span th:each="subject : ${teacher.subjects}" class="subject-badge">
+                            <i class="fas fa-book me-1"></i>
+                            <span th:text="${subject.subject}"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back Button -->
+            <div class="text-center mt-3">
+                <a th:href="@{/teachers/list}"  class="btn btn-outline-light">
+                    <i class="fas fa-arrow-left me-1"></i> Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

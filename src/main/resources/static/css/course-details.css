@@ -1,0 +1,58 @@
+    /* === General Styling === */
+    .post-card {
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .post-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    /* === File Display Styling === */
+    .file-item {
+        width: 150px;
+        height: 170px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: #2d2d2d;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: background-color 0.2s ease;
+    }
+
+    .file-item:hover {
+        background-color: #3a3a3a;
+    }
+
+    .file-link {
+        text-decoration: none;
+        color: white;
+    }
+
+    .file-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 5px;
+    }
+
+    /* === Filename Styling === */
+    .file-name {
+        max-width: 140px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .file-name:hover {
+        cursor: pointer;
+    }

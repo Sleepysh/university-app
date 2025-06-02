@@ -1,0 +1,58 @@
+.autocomplete-block {
+    margin-bottom: 20px;
+}
+
+.multi-select-container {
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 8px;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.multi-select-container input {
+    border: none;
+    flex-grow: 1;
+    min-width: 200px;
+    outline: none;
+}
+
+.suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    z-index: 10;
+}
+
+.suggestions div {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.suggestions div:hover {
+    background-color: #f0f0f0;
+}
+
+.selected-item {
+    background-color: #d0eaff;
+    padding: 5px 10px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.selected-item span {
+    margin-right: 8px;
+}
+
+.remove-btn {
+    cursor: pointer;
+    color: #c00;
+    font-weight: bold;
+}

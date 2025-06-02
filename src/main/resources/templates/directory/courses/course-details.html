@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Course Posts</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" th:href="@{/css/course-details.css}">
+    <link rel="stylesheet" href="/webjars/bootstrap/5.2.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webjars/summernote/0.8.18/summernote-bs5.min.css">
+    <script src="/webjars/jquery/3.6.0/jquery.min.js"></script>
+    <script src="/webjars/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+    <script src="/webjars/summernote/0.8.18/summernote-bs5.min.js"></script>
+
+</head>
+<body class="bg-dark text-light">
+
+<!--navbar-->
+<div th:replace="~{fragment/navbar.html}"></div>
+
+<!-- Main Content -->
+<div class="container">
+    <!-- Course Header -->
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-8">
+            <div class="d-flex align-items-center">
+                <a class="btn btn-outline-secondary me-3" th:href="@{/courses/view}">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div>
+                    <h2 class="mb-1" th:text="${course.name}"></h2>
+                </div>
+            </div>
+        </div>
+        <div sec:authorize="hasAuthority('ROLE_TEACHER')" class="col-md-4 text-end">
+            <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#newPostModal">
+                <i class="fas fa-plus me-1"></i> New Post
+            </button>
+            <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Course Posts Section -->
+    <div class="row">
+        <div class="col-lg-8">
+            <p th:if="${#lists.isEmpty(course.posts)}">No posts.</p>
+
+            <div class="card post-card bg-secondary text-white mb-4" th:each="tempPost : ${course.posts}">
+                <div class="card-header bg-dark d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <h5 class="mb-0" th:text="${tempPost.sender}"></h5>
+                            <small class="text-muted" th:text="${tempPost.localDateTime}"></small>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                            <li>
+                                <button
+                                        type="button"
+                                        class="dropdown-item"
+                                        th:attr="data-course-id=${course.id}, data-post-id=${tempPost.id}, data-post-title=${tempPost.title}, data-post-content=${tempPost.content}"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editPostModal">
+                                    <i class="fas fa-edit me-2"></i>Edit
+                                </button>
+                            </li>
+                            <li><a class="dropdown-item" th:href="@{/courses/{courseId}/post/delete/{postId}(courseId = ${course.id}, postId=${tempPost.id})}"><i class="fas fa-trash me-2"></i>Delete</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <h4 class="card-title" th:text="${tempPost.title}"></h4>
+                    <div class="card-text mb-3" th:text="${tempPost.content}"></div>
+
+                    <!-- Display attached files -->
+                    <div th:if="${tempPost.files != null and !tempPost.files.isEmpty()}" class="mt-3">
+                        <h6 class="fw-bold">📎 Attached Files:</h6>
+
+                        <div class="d-flex flex-wrap gap-2">
+                            <div th:each="file : ${tempPost.files}" class="file-item">
+                                <!-- Display Image Preview if it's an image -->
+                                <div th:if="${file.fileType.startsWith('image/')}" class="image-container">
+                                    <div class="file-item">
+<!--                                        <a th:href="@{/courses/files/{fileId}/download(fileId=${file.id})}" download  target="_blank">-->
+                                            <img src="https://cdn-icons-png.flaticon.com/512/4577/4577383.png"
+                                                 alt="Image File"
+                                                 class="image-preview"
+                                                 style="width: 64px; height: 64px; object-fit: cover;"/>
+<!--                                        </a>-->
+                                        <p class="text-white small mt-1 text-center" th:text="${file.fileName}" ></p>
+                                    </div>
+                                </div>
+
+                                <!-- Display Icon if it's not an image -->
+                                <div th:if="${!file.fileType.startsWith('image/')}">
+<!--                                    <a th:href="@{/courses/files/{fileId}/download(fileId=${file.id})}" download target="_blank" class="file-link">-->
+                                        <div class="file-icon">
+                                            <i class="fas fa-file-alt fa-3x text-primary"></i>
+                                        </div>
+                                        <p th:text="${file.fileName}" class="text-white small mt-1 text-center"></p>
+<!--                                    </a>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Course Sidebar -->
+        <div class="col-lg-4" style="top: 20px; height: fit-content;">
+            <div class="card bg-secondary text-white mb-4">
+                <div class="card-header bg-dark">
+                    <h5 class="mb-0">Course Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6>Instructors:</h6>
+                        <span th:each="tempTeacher, iterStat : ${course.teachers}">
+                        <a th:text="${tempTeacher.firstName + ' ' + tempTeacher.lastName}"></a>
+                            <span th:if="${!iterStat.last}">, </span>
+                    </span>
+                    </div>
+                    <div class="mb-3">
+                        <span th:utext = "${course.description}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New Post Modal -->
+<div class="modal fade" id="newPostModal" tabindex="-1" aria-labelledby="newPostModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-light">
+            <form th:action="@{/courses/{courseId}/post/add(courseId=${course.id})}"
+                  th:object="${post}"
+                  method="post"
+                  enctype="multipart/form-data"
+                  onsubmit="return validateFileSize()">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newPostModalLabel">Create New Post</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Error message container -->
+                    <div th:if="${fileSizeError}" class="alert alert-danger mb-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <span th:text="${fileSizeError}"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="postTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control bg-secondary text-light"
+                               id="postTitle" th:field="*{title}"
+                               placeholder="What's your post about?">
+                    </div>
+                    <div class="mb-3">
+                        <label for="postContent" class="form-label">Content</label>
+                        <textarea class="form-control bg-secondary text-light"
+                                  id="postContent" rows="5" th:field="*{content}"
+                                  placeholder="Write your post here..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fileInput" class="form-label">Upload Files (Max 10MB each)</label>
+                        <input type="file" class="form-control" th:field="*{files}"
+                               id="fileInput" name="files" multiple
+                               accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif">
+                        <small class="text-muted">Supported formats: PDF, DOC, JPG, PNG, GIF</small>
+                    </div>
+
+                    <div id="file-preview" class="mb-3"></div>
+                    <div id="file-size-error" class="text-danger mb-3" style="display:none;">
+                        <i class="fas fa-exclamation-circle me-1"></i>
+                        <span>One or more files exceed the 10MB limit</span>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Post</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    // Client-side validation
+    function validateFileSize() {
+        const fileInput = document.getElementById('fileInput');
+        const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+        const errorDiv = document.getElementById('file-size-error');
+        errorDiv.style.display = 'none';
+
+        if (fileInput.files.length > 0) {
+            for (let i = 0; i < fileInput.files.length; i++) {
+                if (fileInput.files[i].size > maxSize) {
+                    errorDiv.style.display = 'block';
+                    fileInput.value = ''; // Clear selected files
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+</script>
+<!-- Settings Modal -->
+<div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header">
+                <h5 class="modal-title" id="settingsModalLabel">
+                    <i class="fas fa-cog me-2"></i>Settings
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <!-- 🔹 Tab Navigation -->
+                <ul class="nav nav-tabs mb-3" id="settingsTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="teachers-tab" data-bs-toggle="tab" data-bs-target="#teachers"
+                                type="button" role="tab" aria-controls="teachers" aria-selected="true">
+                            Teachers
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="students-tab" data-bs-toggle="tab" data-bs-target="#students"
+                                type="button" role="tab" aria-controls="students" aria-selected="false">
+                            Students
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="settingsTabContent">
+                    <div class="tab-pane fade show active" id="teachers" role="tabpanel" aria-labelledby="teachers-tab">
+                        <form th:action="@{/courses/update/{id}(id=${course.id})}" th:object="${course}" method="post">
+
+                            <div class="mb-3">
+                                <label class="form-label">Title</label>
+                                <input type="text" class="form-control" th:field="*{name}" placeholder="Title">
+                                <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="postContent" class="form-label">Description</label>
+                                <textarea id="descriptionEditor" type="text" class="form-control"
+                                          th:field="*{description}" placeholder="Description"></textarea>
+                                <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="text-danger"></div>
+                            </div>
+
+                            <div id="teacher-list">
+                                <div th:each="teacher, iterStat : ${course.teachers}" class="mb-2 d-flex align-items-center">
+                                    <div class="flex-grow-1 me-2">
+                                        <label th:text="'Teacher ' + (${iterStat.index} + 1)" class="form-label"></label>
+                                        <div class="input-group">
+                                            <input type="hidden" th:field="*{teachers[__${iterStat.index}__].id}" th:value="${teacher.id}" />
+
+                                            <input type="text" th:name="teachers[__${iterStat.index}__].email"
+                                                   th:value="${teacher.email}"
+                                                   class="form-control" placeholder="Teacher's email"/>
+
+                                            <button type="button" class="btn btn-outline-danger" onclick="removeTeacher(this)">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn btn-success mt-2" onclick="addTeacher()">
+                                <i class="fas fa-plus me-1"></i> Add Teacher
+                            </button><br>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="tab-pane fade" id="students" role="tabpanel" aria-labelledby="students-tab">
+                        <div class="mb-3">
+                            <h5 class="mb-3">Add Student</h5>
+
+                            <!-- Add student by email -->
+                            <form th:action="@{/courses/add/student/{id}(id=${course.id})}" method="post" class="mb-3">
+                                <label for="studentEmail" class="form-label">By Email</label>
+                                <div class="input-group">
+                                    <input type="email" id="studentEmail" name="studentEmail" class="form-control" placeholder="Student's email" required>
+                                    <button type="submit" class="btn btn-outline-primary">Add</button>
+                                </div>
+                            </form>
+
+                            <!-- Add students by group -->
+                            <form th:action="@{/courses/add/group/{courseId}(courseId=${course.id})}" method="post" class="mb-4">
+                                <label for="groupName" class="form-label">By Group</label>
+                                <div class="input-group">
+                                    <input type="text" id="groupName" name="groupName" class="form-control" placeholder="Group name" required>
+                                    <button type="submit" class="btn btn-outline-primary">Add</button>
+                                </div>
+                            </form>
+
+                            <!-- Student list -->
+                            <h6 class="mt-4">Enrolled Students</h6>
+                            <table class="table table-striped table-bordered table-hover">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="tempStudent : ${course.students}">
+                                    <td th:text="${tempStudent.firstName + ' ' + tempStudent.lastName}"></td>
+                                    <td th:text="${tempStudent.securityUser.email}"></td>
+                                    <td class="bg-danger bg-opacity-10 text-center p-0 align-middle" style="width: 120px;">
+                                        <form th:action="@{/courses/remove/{courseId}/student/{studentId}(courseId = ${course.id}, studentId=${tempStudent.id})}"
+                                              method="get"
+                                              th:onsubmit="return confirm('Are you sure you want to delete this student?');"
+                                              class="d-flex justify-content-center h-100">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3 py-1 m-1 d-flex align-items-center">
+                                                <i class="fas fa-times me-2"></i>
+                                                <span>Remove</span>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editPostModal" tabindex="-1" aria-labelledby="editPostModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-light">
+            <form id="editPostForm" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editPostModalLabel">Edit Post</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- приховане поле з postId -->
+                    <input type="hidden" name="id" id="editPostId"/>
+                    <div class="mb-3">
+                        <label for="editPostTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control bg-secondary text-light" name="title" id="editPostTitle" required/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPostContent" class="form-label">Content</label>
+                        <textarea class="form-control bg-secondary text-light"  name="content" id="editPostContent" rows="5" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Post</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>-->
+<script th:src="@{/js/menu-bar.js}"></script>
+<script th:src="@{/js/course-details-setting-modal.js}"></script>
+<script th:src="@{/js/course-details-new-post-modal.js}"></script>
+<script th:src="@{/js/course-details-edit-post-modal.js}"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+.profile-card {
+  background-color: #2c2f33;
+  color: #ffffff;
+  border-radius: 15px;
+  padding: 30px;
+  margin-bottom: 40px;
+}
+
+.profile-header {
+  border-bottom: 1px solid #555;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.age-badge {
+  background-color: #0dcaf0;
+  color: #000;
+  padding: 6px 12px;
+  border-radius: 50px;
+  font-weight: bold;
+}
+
+.profile-section {
+  margin-bottom: 20px;
+}
+
+.profile-info p {
+  margin: 0.5rem 0;
+}
+
+a {
+  color: #0dcaf0;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
