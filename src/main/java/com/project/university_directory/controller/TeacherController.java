@@ -158,8 +158,8 @@ public class TeacherController {
                 || bindingResult.hasFieldErrors("age");
     }
 
-    @GetMapping("/delete")
-    public String deleteTeacher(@RequestParam String email, Principal principal) {
+    @GetMapping("/delete/{email}")
+    public String deleteTeacher(@PathVariable String email, Principal principal) {
         if (principal.getName().equals(email)) {
             teacherService.deleteTeacher(email);
             return "redirect:/logout";
