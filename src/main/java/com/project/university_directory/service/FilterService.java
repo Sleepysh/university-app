@@ -8,6 +8,7 @@ import com.project.university_directory.model.teacher_model.TeacherDTO;
 import com.project.university_directory.repository.StudentRepository;
 import com.project.university_directory.repository.TeacherRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class FilterService {
         this.teacherRepository = teacherRepository;
     }
 
+    @Transactional
     public List<Student> filterStudents(StudentDTO filter) {
         return studentRepository.filterStudents(
                 filter.getEmail(),
@@ -36,7 +38,7 @@ public class FilterService {
                 );
     }
 
-
+    @Transactional
     public List<Teacher> filterTeacher(TeacherDTO filter) {
         List<String> subjectNames = null;
         if (filter.getSubjects() != null) {

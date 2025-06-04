@@ -3,6 +3,7 @@ package com.project.university_directory.service;
 import com.project.university_directory.model.student_model.Group;
 import com.project.university_directory.repository.GroupRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class GroupService {
         return groupRepository.findAll();
     }
 
+    @Transactional
     public void saveNewGroup(Group newGroup) {
         if (newGroup != null && newGroup.getName() != null ) {
 
@@ -37,6 +39,7 @@ public class GroupService {
         }
     }
 
+    @Transactional
     public void updateGroup(Long groupId, Group group) {
         if (group.getCourse() != 0  && !group.getName().isEmpty()  && !group.getSpeciality().isEmpty()) {
 
@@ -61,6 +64,7 @@ public class GroupService {
         }
     }
 
+    @Transactional
     public List<Group> findAllWithFilter(String groupName, Short course, String speciality) {
         Short courseFilter = (course != null) ? course : null;
         return groupRepository.filterGroup(groupName, speciality, courseFilter);

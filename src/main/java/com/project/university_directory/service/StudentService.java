@@ -29,6 +29,7 @@ public class StudentService {
         this.groupRepository = groupRepository;
     }
 
+    @Transactional
     public void registerStudent(StudentDTO studentDTO) {
         SecurityUser user = securityUserService.saveUser(
                 new SecurityUser(
@@ -39,6 +40,7 @@ public class StudentService {
         studentRepository.save(
                 processStudent(studentDTO, user));
     }
+
 
     private Student processStudent(StudentDTO studentDTO, SecurityUser user) {
         Group group = groupRepository.findById(studentDTO.getGroupId())
@@ -90,6 +92,7 @@ public class StudentService {
                 .orElseThrow(() -> new NoSuchElementException("There is no student with this id: " + id)));
     }
 
+    @Transactional
     public void update(StudentDTO student) {
         Student newStudent = studentRepository.findById(student.getId())
                 .orElseThrow(() -> new NoSuchElementException("There is no student with this id: " + student.getId()));
@@ -117,6 +120,7 @@ public class StudentService {
         return groupRepository.findByGroupCode(group).orElseThrow(() -> new RuntimeException("Group wasn`t find by name " + group)).getStudents();
     }
 
+    @Transactional
     public void updateProfile(StudentDTO studentDTO) {
         Student student = studentRepository.findById(studentDTO.getId())
                 .orElseThrow(() -> new NoSuchElementException("There is no student with this id: " + studentDTO.getId()));

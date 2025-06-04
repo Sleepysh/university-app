@@ -7,6 +7,7 @@ import com.project.university_directory.repository.SecurityUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,12 @@ public class SecurityUserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    public Role getRole(String roleName) {
+        return roleRepository.findByName(roleName)
+                .orElseThrow(() -> new RuntimeException("Role " + roleName + " not found"));
+    }
+
+    @Transactional
     public SecurityUser saveUser(SecurityUser user, String roleName) {
         Role studentRole = roleRepository.findByName(roleName)
                 .orElseThrow(() -> new RuntimeException("Role " + roleName + " not found"));

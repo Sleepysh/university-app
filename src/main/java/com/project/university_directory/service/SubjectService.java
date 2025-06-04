@@ -3,6 +3,7 @@ package com.project.university_directory.service;
 import com.project.university_directory.model.teacher_model.Subject;
 import com.project.university_directory.repository.SubjectRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +20,7 @@ public class SubjectService {
         return subjectsRepository.findAll();
     }
 
+    @Transactional
     public List<Subject> saveAll(List<String> newSubjects) {
         List<Subject> subjects = newSubjects.stream().map(Subject::new).toList();
         subjectsRepository.saveAll(subjects);
@@ -37,6 +39,7 @@ public class SubjectService {
         return subjectsRepository.findAllFiltered(search);
     }
 
+    @Transactional
     public void updateSubject(Long subjectId, String subjectName) {
         Subject subject = subjectsRepository.findById(subjectId)
                 .orElseThrow(() -> new RuntimeException("A subject with this id" + subjectId + " does not exist"));

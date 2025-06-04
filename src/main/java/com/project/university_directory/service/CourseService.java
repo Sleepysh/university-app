@@ -40,6 +40,7 @@ public class CourseService {
         courseRepository.save(course);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Course not found"));
@@ -101,6 +102,7 @@ public class CourseService {
         courseRepository.save(course);
     }
 
+    @Transactional
     public void addStudentsByGroup(String group, Long id) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Course by " + id + " id wasn't find"));
@@ -115,6 +117,8 @@ public class CourseService {
 
         courseRepository.save(course);
     }
+
+    @Transactional
     public void sendPost(PostDTO postDTO, Long courseId, String teachersEmail) {
         Teacher teacher = teacherService.findByEmail(teachersEmail);
         Post post = new Post();
@@ -168,6 +172,7 @@ public class CourseService {
     }
 
 
+    @Transactional
     public void updatePost(Long courseId, Post updatedPost, Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post by id " + postId + " is not exist"));

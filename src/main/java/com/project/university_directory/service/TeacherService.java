@@ -7,6 +7,7 @@ import com.project.university_directory.model.teacher_model.TeacherDTO;
 import com.project.university_directory.repository.TeacherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,7 @@ public class TeacherService {
                 .orElseThrow(() -> new NoSuchElementException("There is no teacher with this id: " + id)));
     }
 
+    @Transactional
     public void update(TeacherDTO teacher) {
 
         Teacher newTeacher = teacherRepository.findById(teacher.getId()).orElseThrow(() -> new NoSuchElementException("There is no teacher with this id: " + teacher.getId()));
@@ -54,7 +56,6 @@ public class TeacherService {
         newTeacher.setFirstName(teacher.getFirstName());
         newTeacher.setLastName(teacher.getLastName());
         newTeacher.setTelephoneNumber(teacher.getTelephoneNumber());
-        newTeacher.setSubjects(teacher.getSubjects());
 
         teacherRepository.save(newTeacher);
 
@@ -65,12 +66,16 @@ public class TeacherService {
         securityUserService.deleteUser(email);
     }
 
+    @Transactional
     public void registerTeacher(TeacherDTO teacherDTO) {
         SecurityUser user = securityUserService.saveUser(
                 new SecurityUser(
                         teacherDTO.getEmail(),
                         teacherDTO.getPassword()),
                 "TEACHER");
+
+        user.getRoles().add(securityUserService.getRole("STUDENT"));
+        securityUserService.save(user);
 
         List<Subject> subjects = new ArrayList<>(teacherDTO.getSubjects());
 
@@ -100,6 +105,7 @@ public class TeacherService {
     }
 
 
+    @Transactional
     public void updateProfile(TeacherDTO teacherDTO, List<Long> subjectIds) {
         Teacher teacher = teacherRepository.findById(teacherDTO.getId())
                 .orElseThrow(() -> new NoSuchElementException("There is no teacher with this id: " + teacherDTO.getId()));
